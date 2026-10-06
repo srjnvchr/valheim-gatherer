@@ -1,0 +1,11 @@
+<Project>
+  <!-- Copy this file to Local.props and adjust the paths for your machine. Local.props is gitignored. -->
+  <PropertyGroup>
+    <!-- Valheim install folder (contains valheim_Data). -->
+    <ValheimDir>C:\Program Files (x86)\Steam\steamapps\common\Valheim</ValheimDir>
+    <!-- BepInEx folder: a mod manager profile's BepInEx folder, or $(ValheimDir)\BepInEx for a manual install. -->
+    <BepInExDir>$(ValheimDir)\BepInEx</BepInExDir>
+    <!-- Set to true to copy the built DLL into BepInEx\plugins after each build. -->
+    <DeployToPlugins>true</DeployToPlugins>
+  </PropertyGroup>
+</Project>
