@@ -62,7 +62,10 @@ Delete `BepInEx/plugins/ValheimGatherer/`. Pins that were already created stay o
 
 ## Configuration
 
-The config file is `BepInEx/config/valheimgatherer.cfg`. It is created on first launch. If you edit the file by hand, the changes take effect the next time you start the game. If you change settings in-game with a config manager mod (such as BepInEx Configuration Manager, opened with F1), they apply immediately.
+The config file is `BepInEx/config/valheimgatherer.cfg`. It is created on first launch. There are three ways to change settings:
+- **In-game chat commands** (see [In-game commands](#in-game-commands)). Changes apply immediately and are saved to the file.
+- **Editing the file by hand.** The game doesn't notice the edits on its own. Run `/gatherer reload` in chat to apply them, or restart the game.
+- **A config manager mod** such as BepInEx Configuration Manager (opened with F1). Changes apply immediately.
 
 | Section | Setting | Default | Description |
 | --- | --- | --- | --- |
@@ -76,6 +79,23 @@ The config file is `BepInEx/config/valheimgatherer.cfg`. It is created on first 
 | Category.* | `Icon` | varies | Map pin icon (`Icon0` to `Icon4`). |
 | Category.* | `MergeRadius` | varies | No new pin is added if a pin with the same label is already within this distance. |
 | Category.* | `RemoveWhenDepleted` | Ores/Pickables `true` | Removes the pin once the last object it covers is mined or collected. |
+
+## In-game commands
+
+Type these in chat with a leading `/`, or in the F5 console without it. They run only on your own game and are never sent to other players. Press Tab after `/gatherer ` to autocomplete the first option.
+
+| Command | What it does |
+| --- | --- |
+| `/gatherer` | Shows whether pinning is on, the radius, and which categories are enabled. |
+| `/gatherer on` / `off` / `toggle` | Turns automatic pinning on or off. |
+| `/gatherer radius 80` | Sets `DiscoveryRadius` (allowed range 5 to 300). |
+| `/gatherer plants off` | Turns a category on or off: `ores`, `pickables`, `plants`, `infostones`, `locations`, `custom`. |
+| `/gatherer settings` | Lists every setting with its current value. |
+| `/gatherer set <Section.Key> <value>` | Changes any setting by its full name, for example `/gatherer set Category.Ores.MergeRadius 20` or `/gatherer set Rules.CustomRules Crypt=Crypt, Pickable_VoltureEgg=Volture Egg`. |
+| `/gatherer reload` | Re-reads the `.cfg` file after you edit it by hand. |
+| `/gatherer help` | Lists the commands. |
+
+Every change is saved to the `.cfg` file right away, so it is kept after a restart. Invalid values are rejected and the old value stays. Numbers outside the allowed range are clamped to it.
 
 ## Known limitations
 - Only some prefab names were checked against the game files. If a resource is never pinned, its prefab name is probably different, so add it through `CustomRules`.

@@ -18,7 +18,11 @@ flowchart LR
         R["ResourceRules.cs<br/>prefab name → label/category"]
         T["Tracker.cs<br/>loaded resource list"]
         C["Plugin.cs<br/>config + Update loop"]
+        CMD["Commands.cs<br/>/gatherer command"]
     end
+
+    CHAT["Chat (/gatherer) or<br/>F5 console (gatherer)"] --> CMD
+    CMD -- "set values / Reload()" --> C
 
     ZNV --> P
     LOC --> P
@@ -39,6 +43,7 @@ flowchart LR
 | `ResourceRules.cs` | Default rule table and custom/disabled rule parsing. Matches prefab names case-insensitively by prefix, and the longest prefix wins. Caches results by prefab hash. |
 | `Tracker.cs` | Holds the currently loaded resource objects. `Scan()` pins those within range of the local player. `OnDestroyed()` removes a pin when the last object it covers is gone. |
 | `Patches.cs` | Harmony hooks that pass game objects to the rules and the tracker. |
+| `Commands.cs` | Registers the `gatherer` command, which works from chat (`/gatherer`) and the F5 console. Its subcommands read and change config entries, or reload the `.cfg` file. |
 
 ### Lifecycle of a pin
 
@@ -121,8 +126,30 @@ BepInEx uses the GUID for three things:
 This changes the guid of the plugin, so old .cfg files will be ignored. If anyone has installed the plugin before this change then they will lose their settings.
 Copy over the settings from your previous file to the new file if any changes were made.
 
+### 2026-10-08: In-game settings command
+
+**D17. Change settings in game with a `gatherer` command registered through Valheim's `Terminal.ConsoleCommand`.**
+Decompiling `Chat` and `Terminal` showed that:
+- `Chat` is a subclass of `Terminal`;
+- `Chat.InputText` sends any message starting with `/` to `TryRunCommand` with the slash removed;
+- the `ConsoleCommand` constructor adds itself to a static command table shared by chat and the F5 console.
+
+So one registration in `Plugin.Awake` serves both, with no Harmony patch needed. Other details:
+- **Allowed in chat.** Chat only blocks commands marked as cheats, and ours isn't marked as one. That also means it works without enabling cheats or the `-console` launch option.
+- **Not sent to other players.** Commands run locally; only `say` and similar commands broadcast.
+
+Alternatives we rejected:
+- Patching `Chat.InputText` to look for our own prefix: more fragile and unnecessary.
+- A `FileSystemWatcher` that reloads hand-edited files automatically: not needed for now, because `gatherer reload` covers that case explicitly.
+
+**D18. Change config values only through the BepInEx config entries.**
+- **One path for all changes.** `gatherer set` finds the entry by `Section.Key`, case-insensitively, and calls `ConfigEntryBase.SetSerializedValue`. That is the same parser and range clamping used when loading the `.cfg` file.
+- **Changes are saved and applied.** Decompiling BepInEx showed that setting a value saves the file (`SaveOnConfigSet`) and fires `SettingChanged`. So chat changes persist, and rule changes rebuild the rules through the existing handlers.
+- **Invalid input is reported.** Values are checked with `TomlTypeConverter` first, so the player sees an error. Otherwise BepInEx would only write a warning to the log.
+- **Reload uses the same path.** `gatherer reload` calls `ConfigFile.Reload()`, which sets each entry the same way.
+
 ## Open questions / future work
 - Test the default prefab names in-game and add confirmed Ashlands resources (flametal ore, sulfur, vineberries).
 - Remove pins when other players deplete a resource, for example by watching ZDO destruction from remote peers.
-- Add a hotkey or console command to clear or regenerate auto-created pins.
+- Add `gatherer clear` / `gatherer rescan` subcommands to remove or regenerate auto-created pins.
 - Translate labels using the game's localization tokens.

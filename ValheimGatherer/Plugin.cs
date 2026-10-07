@@ -81,6 +81,8 @@ namespace ValheimGatherer
             CustomRules.SettingChanged += (_, __) => RebuildRules();
             DisabledPrefabs.SettingChanged += (_, __) => RebuildRules();
 
+            Commands.Register(Config);
+
             _harmony = new Harmony(Guid);
             _harmony.PatchAll(typeof(Plugin).Assembly);
             Log.LogInfo($"{Name} {Version} loaded");
