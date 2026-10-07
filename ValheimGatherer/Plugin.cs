@@ -10,7 +10,7 @@ namespace ValheimGatherer
     [BepInProcess("valheim.exe")]
     public class Plugin : BaseUnityPlugin
     {
-        public const string Guid = "srjn.valheimgatherer";
+        public const string Guid = "valheimgatherer";
         public const string Name = "Valheim Gatherer";
         public const string Version = "0.1.0";
 
@@ -33,18 +33,41 @@ namespace ValheimGatherer
         {
             Log = Logger;
 
-            Enabled = Config.Bind("General", "Enabled", true, "Automatically pin discovered resources on the map.");
-            DiscoveryRadius = Config.Bind("General", "DiscoveryRadius", 50f,
+            Enabled = Config.Bind(
+                "General", 
+                "Enabled", 
+                true, 
+                "Automatically pin discovered resources on the map.");
+
+            DiscoveryRadius = Config.Bind(
+                "General", 
+                "DiscoveryRadius", 
+                50f,
                 new ConfigDescription("A resource is pinned once you come within this many meters of it.",
-                    new AcceptableValueRange<float>(5f, 300f)));
-            ScanInterval = Config.Bind("General", "ScanInterval", 1f,
-                new ConfigDescription("Seconds between proximity checks.", new AcceptableValueRange<float>(0.1f, 10f)));
-            IgnoreInsidePlayerBase = Config.Bind("General", "IgnoreInsidePlayerBase", true,
+                new AcceptableValueRange<float>(5f, 300f)));
+
+            ScanInterval = Config.Bind(
+                "General", 
+                "ScanInterval", 
+                1f,
+                new ConfigDescription("Seconds between proximity checks.",
+                new AcceptableValueRange<float>(0.1f, 10f)));
+
+            IgnoreInsidePlayerBase = Config.Bind(
+                "General", 
+                "IgnoreInsidePlayerBase", 
+                true,
                 "Skip resources inside a player base (workbench range), e.g. crops and mushrooms you planted.");
-            CustomRules = Config.Bind("Rules", "CustomRules", "",
-                "Extra prefab rules, comma separated, as PrefabPrefix=Label. Matches objects and locations. " +
-                "Example: Pickable_VoltureEgg=Volture Egg, Crypt=Crypt");
-            DisabledPrefabs = Config.Bind("Rules", "DisabledPrefabs", "",
+
+            CustomRules = Config.Bind(
+                "Rules",
+                "CustomRules",
+                "",
+                "Extra prefab rules, comma separated, as PrefabPrefix=Label. Matches objects and locations. Example: Pickable_VoltureEgg=Volture Egg, Crypt=Crypt");
+
+            DisabledPrefabs = Config.Bind("Rules",
+                "DisabledPrefabs",
+                "",
                 "Comma separated prefab prefixes that should never be pinned, e.g. Pickable_Dandelion, Beehive");
 
             BindCategory(ResourceCategory.Ores, Minimap.PinType.Icon2, 15f, removeWhenDepleted: true);

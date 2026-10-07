@@ -110,6 +110,17 @@ The game's asset bundles are compressed, so most prefab names couldn't be checke
 **D15. Keep machine paths and assistant files out of git.**
 `Local.props` holds paths specific to one machine and is gitignored, with a committed `.example` template. The `.gitignore` also excludes build output, IDE files, and Claude assistant files (`.claude/`, `CLAUDE.md`, `CLAUDE.local.md`, `.mcp.json`).
 
+### 2026-10-08: Plugin GUID
+
+**D16. Plugin GUID changed from `srjn.valheimgatherer` to `valheimgatherer`.**
+BepInEx uses the GUID for three things:
+- the config file name (`BepInEx/config/valheimgatherer.cfg`);
+- the plugin's identity, which other mods use to declare dependencies or incompatibilities;
+- the Harmony ID used to apply and remove our patches.
+
+This changes the guid of the plugin, so old .cfg files will be ignored. If anyone has installed the plugin before this change then they will lose their settings.
+Copy over the settings from your previous file to the new file if any changes were made.
+
 ## Open questions / future work
 - Test the default prefab names in-game and add confirmed Ashlands resources (flametal ore, sulfur, vineberries).
 - Remove pins when other players deplete a resource, for example by watching ZDO destruction from remote peers.

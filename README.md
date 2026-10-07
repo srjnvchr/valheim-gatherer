@@ -62,7 +62,7 @@ Delete `BepInEx/plugins/ValheimGatherer/`. Pins that were already created stay o
 
 ## Configuration
 
-The config file is `BepInEx/config/srjn.valheimgatherer.cfg`. It is created on first launch, and changes are picked up while the game is running.
+The config file is `BepInEx/config/valheimgatherer.cfg`. It is created on first launch. If you edit the file by hand, the changes take effect the next time you start the game. If you change settings in-game with a config manager mod (such as BepInEx Configuration Manager, opened with F1), they apply immediately.
 
 | Section | Setting | Default | Description |
 | --- | --- | --- | --- |
